@@ -40,3 +40,28 @@ NUNCA publicar dado velho em silêncio: se uma fonte falhar/pedir login, avisar 
 
 Observação: o HTML (comercial.html / geral.html) quase nunca muda; só os data/*.json. O histórico do BI Geral
 fica embutido no geral.html (atualiza quando o HTML for regerado, não a cada rodada).
+
+## Atualização do FATURAMENTO de hora em hora (decisão do CEO, 26/11/2026)
+
+O cabeçalho ("Atualizado em ... · Vendas até ... · Kommo até ...") e os números principais do BI Comercial
+vêm de blocos embutidos no comercial.html: `window.VENDAS` (faturamento/vendas, fonte Setti Advance pela API +
+exportações) e `window.KOMMO`. Esses blocos NÃO estão nos data/*.json; ficam no HTML. Para eles mudarem sozinhos:
+
+A cada rodada:
+1. Reconstrua `window.VENDAS` a partir das vendas (API Setti Advance; regras de valor e janela em /areas/bi-grupo-nobre.md:
+   VALOR = Valor Curso − Valor Acréscimo − Valor Matrícula; VALORCURSO = Valor Curso; Leandro Nobre + Julio Cesar = "Grupo Nobre";
+   pós fora do faturamento; janela pela data de FECHAMENTO). Mantenha o MESMO formato do bloco atual (campos gerado, fonte, ...,
+   e as listas de pedidos). Atualize `gerado` para o horário atual. Reconstrua `window.KOMMO` (campo gerado = data do último Kommo).
+   NÃO inclua nome/telefone/CPF/e-mail de cliente nesses blocos (o BI Comercial não mostra cliente).
+2. Trava de formato: confira que o novo window.VENDAS tem o campo `gerado` e a lista de pedidos não vazia. Se não tiver, NÃO troque
+   o bloco (deixa o anterior) e avise o Leandro.
+3. Grave o novo window.VENDAS e window.KOMMO em arquivos JSON temporários e troque no HTML com:
+   `node build/replace_block.js comercial.html VENDAS vendas_novo.json`
+   `node build/replace_block.js comercial.html KOMMO kommo_novo.json`
+   (o replace_block recusa conteúdo vazio, protegendo a página.)
+4. TRAVA anti-PII no HTML também: `node build/check_pii.js comercial.html` (além dos data/*.json). Se achar PII, reverta e avise.
+5. Suba a versão para a página se recarregar sozinha: grave data/version.json = {"v": <agora em ms>}.
+6. Commit + push de comercial.html (se mudou), data/*.json e data/version.json. Avise o Leandro com o horário.
+
+Observação: os demais blocos embutidos do comercial (CLIENTES, KFUNIL, HIST, etc.) e o histórico do geral mudam devagar;
+podem ser atualizados no rebuild completo do dia, não precisam de toda hora.
