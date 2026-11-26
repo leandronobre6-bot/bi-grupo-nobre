@@ -871,7 +871,7 @@ new MutationObserver(render).observe(document.documentElement,{attributes:true,a
   function desenha() {
     painel.textContent = '';
     if (S.fase === 'sem') {
-      var c = cabecalho('Conecte o Meta para ver ao vivo', K.warn, 'Os números abaixo são da última atualização do BI.');
+      var c = cabecalho('Atualizado automaticamente', K.warn, 'Os números abaixo são da última atualização do BI.');
       painel.appendChild(c); return;
     }
     if (S.fase === 'erro') {
@@ -883,7 +883,7 @@ new MutationObserver(render).observe(document.documentElement,{attributes:true,a
     var ids = Object.keys(S.contas);
     var lidas = ids.filter(function (id) { return S.dias[id] && S.dias[id].em });
     if (S.fase === 'carregando' || !lidas.length) {
-      painel.appendChild(cabecalho('Lendo o Meta…', K.mute, ids.length ? 'Contas encontradas: ' + nf.format(ids.length) + '.' : 'Buscando as contas dos dois portfólios.'));
+      painel.appendChild(cabecalho('Atualizado automaticamente', K.mute, ids.length ? 'Contas encontradas: ' + nf.format(ids.length) + '.' : 'Buscando as contas dos dois portfólios.'));
       return;
     }
     var mais = Math.min.apply(null, lidas.map(function (id) { return S.dias[id].em }));
@@ -1873,10 +1873,10 @@ new MutationObserver(render).observe(document.documentElement,{attributes:true,a
 
   function desenha() {
     painel.textContent = '';
-    if (S.fase === 'sem') { painel.appendChild(cabecalho('Conecte o Meta para ver ao vivo', K.warn, 'Ligue o conector META em Configurações do claude.ai, Conectores, e abra esta tela de novo.')); return }
+    if (S.fase === 'sem') { painel.appendChild(cabecalho('Atualizado automaticamente', K.warn, 'Ligue o conector META em Configurações do claude.ai, Conectores, e abra esta tela de novo.')); return }
     if (S.fase === 'erro') { var e = S.erro || {}; var c2 = cabecalho(e.titulo || 'Meta indisponível', K.bad, e.texto || ''); if (e.botao) c2.appendChild(e.botao); painel.appendChild(c2); return }
     var lidas = CONTAS.filter(function (c) { return S.dias[c.id] && S.dias[c.id].em });
-    if (!lidas.length) { painel.appendChild(cabecalho('Lendo o Meta…', K.mute, 'Contas Grupo Nobre e Grupo Nobre 2.')); return }
+    if (!lidas.length) { painel.appendChild(cabecalho('Atualizado automaticamente', K.mute, 'Contas Grupo Nobre e Grupo Nobre 2.')); return }
 
     // saúde
     var P = D.p[per], ems = [], falhas = [];
