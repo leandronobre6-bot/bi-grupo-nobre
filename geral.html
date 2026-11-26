@@ -2692,4 +2692,4 @@ new MutationObserver(render).observe(document.documentElement,{attributes:true,a
 })();
 
 </script>
-</body></html>
+<script>(function(){var base=null;function chk(){fetch("data/version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){var v=j&&j.v;if(v==null)return;if(base===null){base=v;return;}if(v!==base){try{sessionStorage.setItem("gn_reload_ok","1");}catch(e){}try{location.reload();}catch(e){}}}).catch(function(){});}chk();setInterval(chk,60000);})();</script></body></html>
