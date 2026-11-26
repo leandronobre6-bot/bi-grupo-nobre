@@ -259,7 +259,7 @@ function snapFor(server,tool,args){ args=args||{};
     if(args.exportMimeType==="text/csv"||args.fileId===LEADS_ID)return {content:LEADS_CSV};
     return null;
   }
-  if(server==="Google Drive"&&tool==="search_files"){return {files:[{id:LEADS_ID,title:"Leads Site Grupo Nobre - Ver preco",modifiedTime:"2026-11-25T15:00:04Z",trashed:false}]};}
+  if(server==="Google Drive"&&tool==="search_files"){var _q=(args&&args.query)||"";if(_q.indexOf("principia_painel")>=0)return {files:[{id:"15XkAn0IiT5Dn5V66v_-K5rQCZXjBR1bo",title:"principia_painel.json",modifiedTime:"2026-11-26T17:01:07Z",trashed:false}]};return {files:[{id:LEADS_ID,title:"Leads Site Grupo Nobre - Ver preco",modifiedTime:"2026-11-25T15:00:04Z",trashed:false}]};}
   return null;
 }
 function deliver(s,t,a,cb){var snap=snapFor(s,t,a);if(snap==null){try{cb({type:"error",error:{code:"server_not_connected"}});}catch(e){}return;}try{cb({type:"data",result:{payload:snap,cache:{storedAt:SNAP_TS}}});}catch(e){}}
