@@ -12,11 +12,22 @@ function maskPhones(v){ if(typeof v==='string') return v.replace(/\(?\d{2}\)?\s?
   if(v&&typeof v==='object'){var o={};for(var k in v)o[k]=maskPhones(v[k]);return o;} return v; }
 // converte linhas [valor,valor,...] em objetos pelas chaves dadas
 function rowsToObj(rows,keys){ return (rows||[]).map(r=>{const o={};keys.forEach((k,i)=>o[k]=r[i]);return o;}); }
-// zera colunas de PII num CSV (por nome de cabeçalho). Mantem o resto.
+// parser CSV ciente de aspas: trata campo entre aspas com virgula interna ("Roberto Paulo,")
+// e aspas escapadas (""). Sem isso, um split simples por virgula desloca as colunas e vaza PII.
+function parseCsvLine(line){
+  const out=[]; let cur=''; let q=false;
+  for(let i=0;i<line.length;i++){ const c=line[i];
+    if(q){ if(c==='"'){ if(line[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else { if(c===','){out.push(cur);cur='';} else if(c==='"'){q=true;} else cur+=c; }
+  }
+  out.push(cur); return out;
+}
+function csvField(v){ v=String(v==null?'':v); return /[",\n\r]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+// zera colunas de PII num CSV (por nome de cabeçalho), respeitando aspas. Mantem o resto.
 function blankCsvCols(csv, colNames){
   const lines=String(csv).split(/\r?\n/); if(!lines.length) return csv;
-  const head=lines[0].split(','); const idx=colNames.map(c=>head.findIndex(h=>h.trim().toLowerCase()===c.trim().toLowerCase())).filter(i=>i>=0);
-  for(let i=1;i<lines.length;i++){ if(!lines[i]) continue; const cols=lines[i].split(','); idx.forEach(j=>{ if(j<cols.length) cols[j]=''; }); lines[i]=cols.join(','); }
+  const head=parseCsvLine(lines[0]); const idx=colNames.map(c=>head.findIndex(h=>h.trim().toLowerCase()===c.trim().toLowerCase())).filter(i=>i>=0);
+  for(let i=1;i<lines.length;i++){ if(!lines[i]) continue; const cols=parseCsvLine(lines[i]); idx.forEach(j=>{ if(j<cols.length) cols[j]=''; }); lines[i]=cols.map(csvField).join(','); }
   return lines.join('\n');
 }
 // anonimiza linhas do principia_painel: nome -> "Aluno N", tel/telFmt -> ""
